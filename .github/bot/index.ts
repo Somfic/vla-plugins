@@ -1,4 +1,4 @@
-import { get_modifications, fetch_original_registry, read_updated_registry, check_modifications_are_allowed, read_updated_file } from "./bot.ts";
+import { get_modifications, fetch_original_registry, read_updated_registry, check_modifications_are_allowed, read_updated_file, ERROR } from "./bot.ts";
 import { Octokit } from "https://esm.sh/octokit@4.0.2?dts";
 
 const octokit = new Octokit({ auth: Deno.env.get("GITHUB_TOKEN") });
@@ -44,14 +44,24 @@ console.log(problems);
 if (problems.length !== 0) {
     console.log("Requesting changes");
 
-    await octokit.rest.pulls.createReview({
-        owner: "Somfic",
-        repo: "vla-plugins",
-        pull_number: pr_number,
-        event: "REQUEST_CHANGES",
-        body: `🚫 ${problems.length} problem${problems.length != 1 ? "s" : ""} found. See attached comments for specific issues.`,
-        comments: problems,
-    });
+    if (problems.some((x) => x.body == ERROR.UNOWNED_PLUGIN_MODIFIED)) {
+        await octokit.rest.pulls.createReview({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            event: "REQUEST_CHANGES",
+            body: `🚫 You may only modify plugins that list you as their author.`,
+        });
+    } else {
+        await octokit.rest.pulls.createReview({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            event: "REQUEST_CHANGES",
+            body: `🚫 ${problems.length} problem${problems.length != 1 ? "s" : ""} found. See attached comments for specific issues.`,
+            comments: problems.filter((x) => x.body != ERROR.UNOWNED_PLUGIN_MODIFIED),
+        });
+    }
 } else {
     console.log("Approving");
 
@@ -63,26 +73,26 @@ if (problems.length !== 0) {
         event: "COMMENT",
         body: "✅ All checks passed.",
     });
-}
 
-if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_association == "FIRST_TIMER") {
-    console.log("First time contributor, requesting review from Somfic");
+    if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_association == "FIRST_TIMER") {
+        console.log("First time contributor, requesting review from Somfic");
 
-    await octokit.rest.pulls.requestReviewers({
-        owner: "Somfic",
-        repo: "vla-plugins",
-        pull_number: pr_number,
-        reviewers: ["Somfic"],
-    });
-} else {
-    console.log("Merging PR");
+        await octokit.rest.pulls.requestReviewers({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            reviewers: ["Somfic"],
+        });
+    } else {
+        console.log("Merging PR");
 
-    // await octokit.rest.pulls.merge({
-    //     owner: "Somfic",
-    //     repo: "vla-plugins",
-    //     pull_number: pr_number,
-    //     merge_method: "squash",
-    // });
+        await octokit.rest.pulls.merge({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            merge_method: "squash",
+        });
+    }
 }
 
 Deno.exit(0);
