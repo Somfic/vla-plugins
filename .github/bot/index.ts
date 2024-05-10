@@ -42,31 +42,48 @@ const problems = check_modifications_are_allowed(
 console.log(`Found ${problems.length} problem${problems.length != 1 ? "s" : ""}`);
 console.log(problems);
 
-let review_result: "REQUEST_CHANGES" | "APPROVE" | "COMMENT" = "REQUEST_CHANGES";
-let review_body = `🚫 ${problems.length} problem${problems.length != 1 ? "s" : ""} encountered`;
-
-if (problems.length === 0) {
-    review_result = "APPROVE";
-    review_body = "✨ all checks passed";
-}
-
-// Submit a review
-await octokit.rest.pulls.createReview({
+// Remove earlier reviews from the bot
+const reviews = await octokit.rest.pulls.listReviews({
     owner: "Somfic",
     repo: "vla-plugins",
     pull_number: pr_number,
-    event: review_result,
-    body: review_body,
-    comments: problems,
 });
 
-if (problems.length == 0 && pr.data.author_association != "FIRST_TIME_CONTRIBUTOR" && pr.data.author_association != "FIRST_TIMER") {
-    // Merge the PR
-    // await octokit.rest.pulls.merge({
-    //     owner: "Somfic",
-    //     repo: "vla-plugins",
-    //     pull_number: pr_number,
-    // });
+for (const review of reviews.data) {
+    if (review.user?.login == "github-actions[bot]") {
+        await octokit.rest.pulls.deletePendingReview({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            review_id: review.id,
+        });
+    }
+}
+
+if (problems.length !== 0) {
+    await octokit.rest.pulls.createReview({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        event: "REQUEST_CHANGES",
+        body: `🚫 ${problems.length} problem${problems.length != 1 ? "s" : ""} encountered.`,
+        comments: problems,
+    });
+} else if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_association == "FIRST_TIMER") {
+    await octokit.rest.pulls.requestReviewers({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        reviewers: ["Somfic"],
+    });
+} else {
+    await octokit.rest.pulls.createReview({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        event: "APPROVE",
+        body: "✅ No problems encountered.",
+    });
 }
 
 // Exit with a non-zero code if there are any problems
