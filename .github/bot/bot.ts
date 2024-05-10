@@ -155,8 +155,10 @@ export async function fetch_original_registry(): Promise<Registry> {
 
     const response = await fetch("https://raw.githubusercontent.com/Somfic/vla-plugins/main/registry.json");
 
-    console.log("Fetched original registry");
     const json = await response.text();
+
+    console.log("Reply from remote:", json);
+
     return JSON.parse(json) as Registry;
 }
 
