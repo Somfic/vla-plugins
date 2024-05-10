@@ -171,19 +171,3 @@ export async function read_updated_registry(): Promise<Registry> {
     const json = await read_updated_file();
     return JSON.parse(json) as Registry;
 }
-
-async function execute(cmd: string) {
-    console.log(`Executing: ${cmd}`);
-
-    const p = new Deno.Command(cmd, {
-        stdout: "piped",
-        stderr: "piped",
-    });
-    const result = await p.output();
-
-    const outStr = new TextDecoder().decode(result.stdout);
-    const errStr = new TextDecoder().decode(result.stderr);
-
-    if (outStr) console.log(outStr);
-    if (errStr) console.error(errStr);
-}
