@@ -1,3 +1,4 @@
+import { Octokit } from "https://esm.sh/octokit@4.0.2?dts";
 import { find_line_number } from "./json.ts";
 import { Problem, Registry } from "./models.ts";
 
@@ -150,11 +151,14 @@ interface Modification {
     type: "create" | "modify" | "delete";
 }
 
-export async function fetch_original_registry(): Promise<Registry> {
-    execute("git fetch origin master");
-    execute("git checkout FETCH_HEAD -- registry.json");
+export async function fetch_original_registry(octokit: Octokit): Promise<Registry> {
+    const { data } = await octokit.rest.repos.getContent({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        path: "registry.json",
+    });
 
-    const json = await Deno.readTextFile("registry.json");
+    const json = atob(data.content);
 
     return JSON.parse(json) as Registry;
 }
