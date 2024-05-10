@@ -3,7 +3,7 @@
         "name": "Test plugin",
         "authors": ["somfic2"],
         "description": "This is a test plugin to test the plugin system.",
-        "isDeprecated": false,
+        "isDeprecated": true,
         "categories": ["test"],
         "keywords": ["test", "plugin"],
         "urls": {
