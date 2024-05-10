@@ -111,6 +111,14 @@ if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_ass
         pull_number: pr_number,
         reviewers: ["Somfic"],
     });
+} else {
+    // Merge!
+    await octokit.rest.pulls.merge({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        merge_method: "squash",
+    });
 }
 
 Deno.exit(0);
