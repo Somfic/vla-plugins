@@ -1,0 +1,18 @@
+# GitHub action scaffold for a bot
+name: Bot
+on:
+    pull_request:
+
+jobs:
+    bot:
+        permissions: write-all
+        runs-on: ubuntu-latest
+        env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            PR_NUMBER: ${{ github.event.pull_request.number }}
+        steps:
+            - uses: actions/checkout@v4
+            - uses: denoland/setup-deno@v1
+              with:
+                  deno-version: vx.x.x
+            - run: deno run -A .github/bot/index.ts
