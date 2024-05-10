@@ -151,8 +151,8 @@ interface Modification {
 }
 
 export async function fetch_original_registry(): Promise<Registry> {
-    await new Deno.Command("git", { args: ["checkout", "main"] }).output();
-    await new Deno.Command("git", { args: ["pull", "origin", "main"] }).output();
+    console.log(await new Deno.Command("git", { args: ["checkout", "main"] }).output());
+    console.log(await new Deno.Command("git", { args: ["pull"] }).output());
 
     const json = await Deno.readTextFile("registry.json");
 
