@@ -11,7 +11,7 @@
             "readme": "https://github.com/somfic/test/readme.md"
         },
         "release": {
-            "stbbable": {
+            "stable": {
                 "signature": "",
                 "version": "1.0.0",
                 "url": "https://somfic.github.com/somfic/test/releases/download/v1.0.0/plugin.wasm"
