@@ -6,6 +6,11 @@ const original = await fetch_original_registry();
 const updated_file = await read_updated_file();
 const updated = await read_updated_registry();
 
+console.log("Original registry:");
+console.log(original);
+console.log("Updated registry");
+console.log(updated);
+
 const modifications = get_modifications(original, updated);
 
 console.log("Found", modifications.length, "modifications");
