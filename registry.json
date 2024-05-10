@@ -22,5 +22,29 @@
                 "url": "https://somfic.github.com/somfic/test/releases/download/v2.0.0.next.123/plugin.wasm"
             }
         }
+    },
+    "test.no.access.for.you2": {
+        "name": "Test plugin",
+        "authors": ["somfic"],
+        "description": "This is a test plugin to test the plugin system.",
+        "isDeprecated": true,
+        "categories": ["test"],
+        "keywords": ["test", "plugin"],
+        "urls": {
+            "repository": "https://github.com/somfic/test",
+            "readme": "https://github.com/somfic/test/readme.md"
+        },
+        "release": {
+            "stable": {
+                "signature": "",
+                "version": "1.0.0",
+                "url": "https://somfic.github.com/somfic/test/releases/download/v1.0.0/plugin.wasm"
+            },
+            "prerelease": {
+                "signature": "",
+                "version": "2.0.0.next.123",
+                "url": "https://somfic.github.com/somfic/test/releases/download/v2.0.0.next.123/plugin.wasm"
+            }
+        }
     }
 }
