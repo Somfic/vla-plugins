@@ -52,6 +52,28 @@ if (problems.length !== 0) {
             event: "REQUEST_CHANGES",
             body: `🚫 You may only modify plugins that list you as their author.`,
         });
+
+        await octokit.rest.pulls.requestReviewers({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            reviewers: ["Somfic"],
+        });
+    } else if (problems.some((x) => x.body == ERROR.TOUCHED_NON_REGISTRY_FILE)) {
+        await octokit.rest.pulls.createReview({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            event: "REQUEST_CHANGES",
+            body: `🚫 You may only modify the registry.json file.`,
+        });
+
+        await octokit.rest.pulls.requestReviewers({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            pull_number: pr_number,
+            reviewers: ["Somfic"],
+        });
     } else {
         await octokit.rest.pulls.createReview({
             owner: "Somfic",
