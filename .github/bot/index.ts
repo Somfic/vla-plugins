@@ -51,11 +51,12 @@ const reviews = await octokit.rest.pulls.listReviews({
 
 for (const review of reviews.data) {
     if (review.user?.login == "github-actions[bot]") {
-        await octokit.rest.pulls.deletePendingReview({
+        await octokit.rest.pulls.dismissReview({
             owner: "Somfic",
             repo: "vla-plugins",
             pull_number: pr_number,
             review_id: review.id,
+            message: "Dismissing earlier bot review",
         });
     }
 }
