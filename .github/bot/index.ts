@@ -50,6 +50,11 @@ const reviews = await octokit.rest.pulls.listReviews({
 });
 
 for (const review of reviews.data) {
+    // Filter out already dismissed reviews
+    if (review.state == "DISMISSED") {
+        continue;
+    }
+
     if (review.user?.login == "github-actions[bot]") {
         await octokit.rest.pulls.dismissReview({
             owner: "Somfic",
