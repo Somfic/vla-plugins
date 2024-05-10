@@ -52,7 +52,7 @@ const reviews = await octokit.rest.pulls.listReviews({
 
 for (const review of reviews.data) {
     // Filter out already dismissed reviews
-    if (review.state == "DISMISSED") {
+    if (review.state == "DISMISSED" || review.state == "APPROVED") {
         continue;
     }
 
