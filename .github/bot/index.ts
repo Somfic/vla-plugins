@@ -35,7 +35,7 @@ const problems = check_modifications_are_allowed(
     modifications,
     original,
     updated_file,
-    pr.data.author_association,
+    pr.data.user?.login,
     changed_files.data.map((f) => f.filename)
 );
 
