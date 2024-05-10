@@ -151,8 +151,8 @@ interface Modification {
 }
 
 export async function fetch_original_registry(): Promise<Registry> {
-    console.log(await new Deno.Command("git", { args: ["checkout", "main"] }).output());
-    console.log(await new Deno.Command("git", { args: ["pull"] }).output());
+    execute("git fetch origin master");
+    execute("git checkout FETCH_HEAD -- registry.json");
 
     const json = await Deno.readTextFile("registry.json");
 
@@ -166,4 +166,20 @@ export async function read_updated_file(): Promise<string> {
 export async function read_updated_registry(): Promise<Registry> {
     const json = await read_updated_file();
     return JSON.parse(json) as Registry;
+}
+
+async function execute(cmd: string) {
+    console.log(`Executing: ${cmd}`);
+
+    const p = new Deno.Command(cmd, {
+        stdout: "piped",
+        stderr: "piped",
+    });
+    const result = await p.output();
+
+    const outStr = new TextDecoder().decode(result.stdout);
+    const errStr = new TextDecoder().decode(result.stderr);
+
+    if (outStr) console.log(outStr);
+    if (errStr) console.error(errStr);
 }
