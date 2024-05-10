@@ -1,7 +1,7 @@
 {
     "test.no.access.for.you": {
         "name": "Test plugin",
-        "authors": ["somfic2"],
+        "authors": ["somfic"],
         "description": "This is a test plugin to test the plugin system.",
         "isDeprecated": false,
         "categories": ["test"],
