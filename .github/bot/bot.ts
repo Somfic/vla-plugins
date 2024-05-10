@@ -151,13 +151,9 @@ interface Modification {
 }
 
 export async function fetch_original_registry(): Promise<Registry> {
-    console.log("Fetching original registry");
+    new Deno.Command("git", { args: ["fetch", "origin", "main"] });
 
-    const response = await fetch("https://raw.githubusercontent.com/Somfic/vla-plugins/main/registry.json");
-
-    const json = await response.text();
-
-    console.log("Reply from remote:", json);
+    const json = await Deno.readTextFile("registry.json");
 
     return JSON.parse(json) as Registry;
 }
