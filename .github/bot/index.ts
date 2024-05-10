@@ -1,5 +1,6 @@
 import { get_modifications, fetch_original_registry, read_updated_registry, check_modifications_are_allowed, read_updated_file } from "./bot.ts";
 import { Octokit } from "https://esm.sh/octokit@4.0.2?dts";
+import { find_line_number } from "./json.ts";
 
 console.log("Running bot");
 
@@ -72,23 +73,26 @@ if (problems.length !== 0) {
         repo: "vla-plugins",
         pull_number: pr_number,
         event: "REQUEST_CHANGES",
-        body: `🚫 ${problems.length} problem${problems.length != 1 ? "s" : ""} encountered.`,
+        body: `🚫 ${problems.length} problem${problems.length != 1 ? "s" : ""} found. See attached comments for specific issues.`,
         comments: problems,
     });
-} else if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_association == "FIRST_TIMER") {
+} else {
+    // Comment
+    await octokit.rest.pulls.createReview({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        event: "COMMENT",
+        body: "✅ All checks passed.",
+    });
+}
+
+if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_association == "FIRST_TIMER") {
     await octokit.rest.pulls.requestReviewers({
         owner: "Somfic",
         repo: "vla-plugins",
         pull_number: pr_number,
         reviewers: ["Somfic"],
-    });
-} else {
-    await octokit.rest.pulls.createReview({
-        owner: "Somfic",
-        repo: "vla-plugins",
-        pull_number: pr_number,
-        event: "APPROVE",
-        body: "✅ No problems encountered.",
     });
 }
 
