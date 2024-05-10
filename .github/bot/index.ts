@@ -97,14 +97,7 @@ if (problems.length !== 0) {
     });
 
     if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_association == "FIRST_TIMER") {
-        console.log("First time contributor, requesting review from Somfic");
-
-        await octokit.rest.pulls.requestReviewers({
-            owner: "Somfic",
-            repo: "vla-plugins",
-            pull_number: pr_number,
-            reviewers: ["Somfic"],
-        });
+        console.log("First time contributor, not automatically merging");
     } else {
         console.log("Merging PR");
 
