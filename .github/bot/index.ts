@@ -43,30 +43,6 @@ const problems = check_modifications_are_allowed(
 console.log(`Found ${problems.length} problem${problems.length != 1 ? "s" : ""}`);
 console.log(problems);
 
-// Remove earlier reviews from the bot
-const reviews = await octokit.rest.pulls.listReviews({
-    owner: "Somfic",
-    repo: "vla-plugins",
-    pull_number: pr_number,
-});
-
-for (const review of reviews.data) {
-    // Filter out already dismissed reviews
-    if (review.state == "DISMISSED" || review.state == "APPROVED") {
-        continue;
-    }
-
-    if (review.user?.login == "github-actions[bot]") {
-        await octokit.rest.pulls.dismissReview({
-            owner: "Somfic",
-            repo: "vla-plugins",
-            pull_number: pr_number,
-            review_id: review.id,
-            message: "Dismissing earlier bot review",
-        });
-    }
-}
-
 if (problems.length !== 0) {
     await octokit.rest.pulls.createReview({
         owner: "Somfic",
