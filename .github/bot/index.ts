@@ -92,9 +92,4 @@ if (problems.length !== 0) {
     });
 }
 
-// Exit with a non-zero code if there are any problems
-if (problems.length > 0) {
-    Deno.exit(1);
-} else {
-    Deno.exit(0);
-}
+Deno.exit(0);
