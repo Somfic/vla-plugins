@@ -1,10 +1,12 @@
 import { get_modifications, fetch_original_registry, read_updated_registry, check_modifications_are_allowed, read_updated_file } from "./bot.ts";
 import { Octokit } from "https://esm.sh/octokit@4.0.2?dts";
 
+const octokit = new Octokit({ auth: Deno.env.get("GITHUB_TOKEN") });
+
 const updated_file = await read_updated_file();
 const updated = await read_updated_registry();
 
-const original = await fetch_original_registry();
+const original = await fetch_original_registry(octokit);
 
 console.log("Original registry:");
 console.log(original);
@@ -17,7 +19,6 @@ console.log("Found", modifications.length, "modifications");
 console.log(modifications);
 
 const pr_number = parseInt(Deno.env.get("PR_NUMBER") ?? "0");
-const octokit = new Octokit({ auth: Deno.env.get("GITHUB_TOKEN") });
 const pr = await octokit.rest.pulls.get({
     owner: "Somfic",
     repo: "vla-plugins",
