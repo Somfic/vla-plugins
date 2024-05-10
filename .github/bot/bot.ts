@@ -42,7 +42,7 @@ export function check_modifications_are_allowed(modifications: Modification[], o
 
     // Check that the author owns the plugin being modified
     if (!original_plugin?.authors.map((x) => x.toLowerCase())?.includes(author.toLowerCase())) {
-        errors.push({ path: "registry.json", body: ERROR.UNOWNED_PLUGIN_MODIFIED, line: find_line_number(modified_file, `${plugin_id}+authors`)?.start.line });
+        errors.push({ path: "registry.json", body: ERROR.UNOWNED_PLUGIN_MODIFIED });
     }
 
     // Check that the plugin has all the required fields
