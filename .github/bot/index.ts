@@ -65,6 +65,23 @@ for (const review of reviews.data) {
             message: "Dismissing earlier bot review",
         });
     }
+
+    // Resolve any pending comment threads
+    const comments = await octokit.rest.pulls.listCommentsForReview({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        review_id: review.id,
+    });
+
+    for (const comment of comments.data) {
+        await octokit.rest.pulls.deleteReviewComment({
+            owner: "Somfic",
+            repo: "vla-plugins",
+            comment_id: comment.id,
+            body: "Dismissing earlier bot review.",
+        });
+    }
 }
 
 if (problems.length !== 0) {
@@ -93,6 +110,14 @@ if (pr.data.author_association == "FIRST_TIME_CONTRIBUTOR" || pr.data.author_ass
         repo: "vla-plugins",
         pull_number: pr_number,
         reviewers: ["Somfic"],
+    });
+} else {
+    // Merge!
+    await octokit.rest.pulls.merge({
+        owner: "Somfic",
+        repo: "vla-plugins",
+        pull_number: pr_number,
+        merge_method: "squash",
     });
 }
 
